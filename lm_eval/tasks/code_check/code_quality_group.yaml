@@ -1,0 +1,19 @@
+group: code_quality
+task:
+  - python_code_quality
+aggregate_metric_list:
+  - metric: code_quality_score
+    aggregation: mean
+    higher_is_better: true
+  - metric: functional_correctness
+    aggregation: mean
+    higher_is_better: true
+  - metric: syntax_validity
+    aggregation: mean
+    higher_is_better: true
+  - metric: code_style_score
+    aggregation: mean
+    higher_is_better: true
+metadata:
+  version: 1.0
+  description: "Group of tasks for evaluating code quality in LLM-generated Python code"
