@@ -12,55 +12,9 @@ Run the simple test to confirm everything is working:
 python test_task_simple.py
 ```
 
-## 🔬 **Step 2: Test with Hosted Model (Recommended)**
+## 🚀 **Step 2: Run with Your Local Model**
 
-Before using your local model, test with a hosted model to verify results:
-
-### Option A: Claude (Anthropic) - Recommended for Code
-```bash
-export ANTHROPIC_API_KEY="your_key_here"
-
-lm_eval \
-  --model anthropic-completions \
-  --model_args model=claude-3-haiku-20240307 \
-  --tasks python_code_quality \
-  --output_path test_results/claude_test.json \
-  --log_samples \
-  --limit 2 \
-  --batch_size 1
-```
-
-### Option B: Claude Sonnet (More Powerful)
-```bash
-export ANTHROPIC_API_KEY="your_key_here"
-
-lm_eval \
-  --model anthropic-completions \
-  --model_args model=claude-3-5-sonnet-20241022 \
-  --tasks python_code_quality \
-  --output_path test_results/claude_sonnet_test.json \
-  --log_samples \
-  --limit 2 \
-  --batch_size 1
-```
-
-### Option C: Claude Chat Interface
-```bash
-export ANTHROPIC_API_KEY="your_key_here"
-
-lm_eval \
-  --model anthropic-chat \
-  --model_args model=claude-3-haiku-20240307 \
-  --tasks python_code_quality \
-  --output_path test_results/claude_chat_test.json \
-  --log_samples \
-  --limit 2 \
-  --batch_size 1
-```
-
-## 🚀 **Step 3: Run with Your Local Model**
-
-Once the hosted model test works, run with your local Qwen model:
+Run with your local Qwen model, managed by LM_Studio:
 
 ### Option A: Chat Completions API
 ```bash
@@ -84,6 +38,38 @@ lm_eval \
   --output_path output_code_results/qwen_code_quality_results.json \
   --log_samples \
   --limit 2 \
+  --batch_size 1
+```
+
+## 🔬 **Step 2: Test with Hosted Model (Recommended)**
+
+Test with a remoted model to verify results:
+
+### Option A: Claude (Anthropic) - Recommended for Code
+```bash
+export ANTHROPIC_API_KEY="your_key_here"
+
+lm_eval \
+  --model anthropic-chat \
+  --model_args model=claude-3-haiku-20240307 \
+  --tasks python_code_quality \
+  --output_path test_results/claude_test.json \
+  --log_samples \
+  --limit 2 \
+  --batch_size 1
+```
+
+### Option B: Claude Sonnet (More Powerful)
+```bash
+export ANTHROPIC_API_KEY="your_key_here"
+
+lm_eval \
+  --model anthropic-chat \
+  --model_args model=claude-sonnet-4-20250514 \
+  --tasks python_code_quality \
+  --output_path test_results/claude_test1.json \
+  --log_samples \
+  --limit 1 \
   --batch_size 1
 ```
 
