@@ -379,6 +379,14 @@ class AnthropicChat(LocalCompletionsAPI):
         for out in outputs:
             for choices in out["content"]:
                 res.append(choices["text"])
+        
+        
+        print(f"\n🐛 DEBUG - anthropic-chat  Response:")
+        print(f"🐛 DEBUG - Response length: {len(res)} characters")
+        print(f"🐛 DEBUG - Response type: {type(res)}")
+        print(f"{'='*50}")
+        print(res)
+        print(f"{'='*50}")
         return res
 
     def tok_encode(

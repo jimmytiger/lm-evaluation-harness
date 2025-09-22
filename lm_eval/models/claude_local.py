@@ -19,6 +19,7 @@ def claude_local_completion(
     max_tokens: int,
     temperature: float,
     stop: List[str],
+    debug: bool = False,
     **kwargs: Any,
 ) -> str:
     """Local wrapper function around the Anthropic SDK with exponential back-off
@@ -37,6 +38,8 @@ def claude_local_completion(
             Sampling temperature
         stop: List[str]
             List of stop sequences
+        debug: bool
+            Enable debug mode to print responses
         kwargs: Any
             Additional model_args to pass to the SDK
     """
@@ -71,7 +74,19 @@ please install anthropic via `pip install 'lm-eval[anthropic]'` or `pip install 
             messages=[{"role": "user", "content": prompt}],
             **kwargs,
         )
-        return response.content[0].text
+        response_text = response.content[0].text
+        
+        #if debug:
+        if True:
+            print(f"\n🐛 DEBUG - Claude Local Response:")
+            print(f"🐛 DEBUG - Model: {model}")
+            print(f"🐛 DEBUG - Response length: {len(response_text)} characters")
+            print(f"🐛 DEBUG - Response type: {type(response_text)}")
+            print(f"{'='*50}")
+            print(response_text)
+            print(f"{'='*50}")
+        
+        return response_text
 
     return messages()
 
@@ -86,6 +101,7 @@ class ClaudeLocal(LM):
         max_tokens: int = 1024,
         temperature: float = 0.0,
         api_key: str = None,
+        debug: bool = False,
         **kwargs,
     ) -> None:
         """Local Claude SDK wrapper.
@@ -98,6 +114,8 @@ class ClaudeLocal(LM):
             Sampling temperature
         :param api_key: str
             Anthropic API key (if None, uses environment variable)
+        :param debug: bool
+            Enable debug mode to print Claude responses (default: False)
         :param kwargs: Any
             Additional model_args to pass to the SDK
         """
@@ -114,6 +132,7 @@ please install anthropic via `pip install 'lm-eval[anthropic]'` or `pip install 
         self.model = model
         self.max_tokens = max_tokens
         self.temperature = temperature
+        self.debug = debug
         self.kwargs = kwargs
         
         # Initialize Anthropic client
@@ -124,6 +143,8 @@ please install anthropic via `pip install 'lm-eval[anthropic]'` or `pip install 
             self.client = anthropic.Anthropic()
         
         eval_logger.info(f"Initialized Claude Local model: {model}")
+        if self.debug:
+            eval_logger.info("Debug mode enabled - will print Claude responses")
 
     @property
     def eot_token_id(self):
@@ -197,7 +218,10 @@ please install anthropic via `pip install 'lm-eval[anthropic]'` or `pip install 
                 
                 # Filter out lm_eval specific parameters that shouldn't go to Anthropic API
                 api_kwargs = {k: v for k, v in self.kwargs.items() 
-                             if k not in ['batch_size', 'limit', 'num_fewshot']}
+                             if k not in ['batch_size', 'limit', 'num_fewshot', 'debug']}
+                
+                # Check for debug mode (either from init parameter or environment variable)
+                debug_mode = self.debug or os.getenv('PYTHON_CODING_DEBUG', '').lower() == 'true'
                 
                 # Generate response using Claude SDK
                 response = claude_local_completion(
@@ -207,6 +231,7 @@ please install anthropic via `pip install 'lm-eval[anthropic]'` or `pip install 
                     max_tokens=max_gen_toks,
                     temperature=temperature,
                     stop=until,
+                    debug=debug_mode,
                     **api_kwargs,
                 )
                 res.append(response)
@@ -224,6 +249,12 @@ please install anthropic via `pip install 'lm-eval[anthropic]'` or `pip install 
                 eval_logger.error(f"Unexpected error with Claude Local: {e}")
                 res.append("")
 
+        print(f"\n🐛 DEBUG - Claude Local response:")
+        print(f"🐛 DEBUG - Response length: {len(res)} characters")
+        print(f"🐛 DEBUG - Response type: {type(res)}")
+        print(f"{'='*50}")
+        print(res)
+        print(f"{'='*50}")
         return res
 
     def _model_call(self, inps):
